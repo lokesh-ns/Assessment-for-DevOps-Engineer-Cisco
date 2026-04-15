@@ -1,6 +1,7 @@
 name: Deploy MindMeld
 
 on:
+  workflow_dispatch: 
   push:
     branches:
       - master
@@ -11,9 +12,7 @@ env:
   S3_BUCKET: mindmeld-dev-frontend
 
 jobs:
-  # ─────────────────────────────────────────
   # JOB 1: Terraform - Create/Update Infra
-  # ─────────────────────────────────────────
   terraform:
     name: Terraform Apply
     runs-on: ubuntu-latest
@@ -56,9 +55,7 @@ jobs:
           echo "alb_dns_name=$(terraform output -raw alb_dns_name)" >> $GITHUB_OUTPUT
           echo "cloudfront_distribution_id=$(terraform output -raw cloudfront_distribution_id)" >> $GITHUB_OUTPUT
 
-  # ─────────────────────────────────────────
   # JOB 2: Build & Push Backend to ECR
-  # ─────────────────────────────────────────
   build-backend:
     name: Build & Push Backend
     runs-on: ubuntu-latest
@@ -94,9 +91,7 @@ jobs:
             --service mindmeld-dev-api \
             --force-new-deployment
 
-  # ─────────────────────────────────────────
   # JOB 3: Build & Deploy Frontend to S3
-  # ─────────────────────────────────────────
   build-frontend:
     name: Build & Deploy Frontend
     runs-on: ubuntu-latest
