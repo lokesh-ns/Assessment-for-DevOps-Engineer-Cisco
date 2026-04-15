@@ -23,6 +23,8 @@ jobs:
     outputs:
       alb_dns_name: ${{ steps.tf-outputs.outputs.alb_dns_name }}
       cloudfront_distribution_id: ${{ steps.tf-outputs.outputs.cloudfront_distribution_id }}
+      ecs_cluster_name: ${{ steps.tf-outputs.outputs.ecs_cluster_name }}
+      ecs_service_name: ${{ steps.tf-outputs.outputs.ecs_service_name }}
 
     steps:
       - name: Checkout code
@@ -54,6 +56,9 @@ jobs:
         run: |
           echo "alb_dns_name=$(terraform output -raw alb_dns_name)" >> $GITHUB_OUTPUT
           echo "cloudfront_distribution_id=$(terraform output -raw cloudfront_distribution_id)" >> $GITHUB_OUTPUT
+          echo "ecs_cluster_name=$(terraform output -raw ecs_cluster_name)" >> $GITHUB_OUTPUT   
+          echo "ecs_service_name=$(terraform output -raw ecs_service_name)" >> $GITHUB_OUTPUT    
+          
 
   # JOB 2: Build & Push Backend to ECR
   build-backend:
@@ -87,8 +92,8 @@ jobs:
       - name: Force ECS service redeploy
         run: |
           aws ecs update-service \
-            --cluster mindmeld-dev \
-            --service mindmeld-dev-api \
+            --cluster ${{ needs.terraform.outputs.ecs_cluster_name }} \
+            --service ${{ needs.terraform.outputs.ecs_service_name }} \
             --force-new-deployment
 
   # JOB 3: Build & Deploy Frontend to S3
