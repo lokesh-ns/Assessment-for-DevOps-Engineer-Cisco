@@ -1,5 +1,5 @@
 module "vpc" {
-  source               = "/Users/lokeshns/Downloads/devops-test-master/terraform/modules/vpc"
+  source               = "../../modules/vpc"
   project              = var.project
   environment          = var.environment
   vpc_cidr             = var.vpc_cidr
@@ -9,13 +9,13 @@ module "vpc" {
 }
 
 module "ecr" {
-  source      = "/Users/lokeshns/Downloads/devops-test-master/terraform/modules/ecr"
+  source      = "../../modules/ecr"
   project     = var.project
   environment = var.environment
 }
 
 module "alb" {
-  source             = "/Users/lokeshns/Downloads/devops-test-master/terraform/modules/alb"
+  source             = "../../modules/alb"
   project            = var.project
   environment        = var.environment
   vpc_id             = module.vpc.vpc_id
@@ -24,7 +24,7 @@ module "alb" {
 }
 
 module "ecs" {
-  source               = "/Users/lokeshns/Downloads/devops-test-master/terraform/modules/ecs"
+  source               = "../../modules/ecs"
   project              = var.project
   environment          = var.environment
   aws_region           = var.aws_region
@@ -43,7 +43,7 @@ module "ecs" {
 }
 
 module "redis" {
-  source              = "/Users/lokeshns/Downloads/devops-test-master/terraform/modules/redis"
+  source              = "../../modules/redis"
   project             = var.project
   environment         = var.environment
   vpc_id              = module.vpc.vpc_id
@@ -53,7 +53,7 @@ module "redis" {
 }
 
 module "cloudfront" {
-  source      = "/Users/lokeshns/Downloads/devops-test-master/terraform/modules/cloudfront"
+  source      = "../../modules/cloudfront"
   project     = var.project
   environment = var.environment
   alb_dns_name = module.alb.alb_dns_name
