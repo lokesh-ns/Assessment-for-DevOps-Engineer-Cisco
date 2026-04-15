@@ -7,5 +7,5 @@ output "ecs_cluster_name" {
 }
 
 output "ecs_service_name" {
-  value = aws_ecs_service.this.name
+  value = aws_ecs_service.api.name
 }
