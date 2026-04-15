@@ -1,7 +1,7 @@
 name: Deploy MindMeld
 
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
   push:
     branches:
       - master
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: terraform/envs/dev
+        working-directory: Assesment-2/devops-test-master/terraform/envs/dev
 
     outputs:
       alb_dns_name: ${{ steps.tf-outputs.outputs.alb_dns_name }}
@@ -38,7 +38,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_wrapper: false  # needed for clean output parsing
+          terraform_wrapper: false
 
       - name: Terraform Init
         run: terraform init
@@ -77,7 +77,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build, tag and push Docker image
-        working-directory: api
+        working-directory: Assesment-2/devops-test-master/api
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
@@ -114,23 +114,23 @@ jobs:
           node-version: '16'
 
       - name: Update config.json with dynamic ALB URL
-        working-directory: app/src
+        working-directory: Assesment-2/devops-test-master/app/src
         run: |
           echo '{
             "apiUrl": "http://${{ needs.terraform.outputs.alb_dns_name }}"
           }' > config.json
 
       - name: Install dependencies
-        working-directory: app
+        working-directory: Assesment-2/devops-test-master/app
         run: npm install
 
       - name: Build React app
-        working-directory: app
+        working-directory: Assesment-2/devops-test-master/app
         run: npm run build
 
       - name: Sync to S3
         run: |
-          aws s3 sync app/build/ s3://$S3_BUCKET --delete
+          aws s3 sync Assesment-2/devops-test-master/app/build/ s3://$S3_BUCKET --delete
 
       - name: Invalidate CloudFront cache
         run: |
